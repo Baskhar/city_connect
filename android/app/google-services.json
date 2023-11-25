@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "892953408643",
+    "project_id": "city-connect-21ddf",
+    "storage_bucket": "city-connect-21ddf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:892953408643:android:db32c0351209dcee14d7b6",
+        "android_client_info": {
+          "package_name": "com.walysson.city_connect"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "892953408643-3tmf2alp2qiqo1no6cqematj5ukfgeuu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9-edF5RpIy7WanJgnmLqvTdK_Z3Tj6QU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "892953408643-3tmf2alp2qiqo1no6cqematj5ukfgeuu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
