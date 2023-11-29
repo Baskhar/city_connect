@@ -1,27 +1,28 @@
-import 'package:city_connect/app/common_widgets/seta_back.dart';
 import 'package:city_connect/app/data/http/http_cliente.dart';
+import 'package:city_connect/app/data/models/auth_model/auth_model.dart';
 import 'package:city_connect/app/data/repositories/auth_repository.dart';
-import 'package:city_connect/app/modules/auth/login/login_store.dart';
 import 'package:city_connect/app/modules/auth/login/widgets/custom_text_form_field_login.dart';
 import 'package:city_connect/app/modules/auth/register/register_store.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:flutter_modular/flutter_modular.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
+import '../../../../constants/app_colors.dart';
 import '../../../../common_widgets/custom_load_button.dart';
 import '../../../../common_widgets/login/my_container_login_custom.dart';
-import '../../../../constants/app_colors.dart';
+import '../../../../common_widgets/seta_back.dart';
+
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+  const RegisterScreen({Key? key}) : super(key: key);
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  final store = RegisterStore(repository: AuthRepository(cliente: HttpCliente()));
+  final store =
+      RegisterStore(repository: AuthRepository(cliente: HttpCliente()));
 
   final _formKey = GlobalKey<FormState>();
   final _nomeController = TextEditingController();
@@ -50,9 +51,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Container(
                   height: 400,
                   decoration: BoxDecoration(
-                      color: AppColors.white,
-                      borderRadius: BorderRadius.circular(15),
-                      border: Border.all(width: 1, color: AppColors.black)),
+                    color: AppColors.white,
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(width: 1, color: AppColors.black),
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
@@ -76,28 +78,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           controller: _senhaController,
                           hint: 'Senha',
                           validatorMessage: 'Senha obrigatória',
+                          obscureText: true,
                         ),
                         const SizedBox(height: 10),
                         CustomTextFormFieldLogin(
                           controller: _confirmarSenhaController,
                           hint: 'Repita a senha',
-                          validatorMessage: 'Senha obrigatória',
+                          validatorMessage: 'Senhas não coincidem',
+                          obscureText: true,
                         ),
                       ],
                     ),
                   ),
                 ),
-
                 SizedBox(height: 10),
-                // CustomLoadButton(
-                //   title: 'Entrar com o google',
-                //   height: 50,
-                //   buttonColor: AppColors.white,
-                //   width: largura * 0.50,
-                //   loading: false,
-                //   textColor: Colors.cyan,
-                //   onClick: _signInWithGoogle,
-                // ),
                 SizedBox(height: 10),
                 Observer(
                   builder: (_) {
@@ -110,7 +104,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       textColor: AppColors.cyan,
                       onClick: () {
                         if (_formKey.currentState!.validate()) {
-                          _handleLogin();
+                          _handleRegister(
+                            nome: _nomeController.text,
+                            email: _emailController.text,
+                            password: _senhaController.text,
+                          );
                           FocusScope.of(context).unfocus();
                         }
                       },
@@ -126,20 +124,37 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  void _handleLogin() async {
-    // Modular.to.pushReplacementNamed('/home/');
+  void _handleRegister({
+    required String nome,
+    required String email,
+    required String password,
+  }) async {
+    if (_senhaController.text != _confirmarSenhaController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('As senhas não coincidem'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    final register = AuthModel(nome: nome, email: email, password: password);
+    await store.register(user: register);
+
+    if (store.registerError) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erro ao fazer login'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } else if (store.registerSuccess) {
+      _emailController.clear();
+      _senhaController.clear();
+      _confirmarSenhaController.clear();
+      _nomeController.clear();
+      Modular.to.pop('/login/');
+    }
   }
-  //   print(_email.text);
-  //   await store.loginWithEmailAndPassword(_email.text, _senha.text);
-  //   if (store.loginError) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(
-  //         content: Text('Erro ao fazer login'),
-  //         backgroundColor: Colors.red,
-  //       ),
-  //     );
-  //   } else if (store.loginSucess == true) {
-  //     Modular.to.pushReplacementNamed('/home/');
-  //   }
-  // }
 }

@@ -1,9 +1,15 @@
-import 'package:city_connect/app/modules/home/screens/hoteis_screen.dart';
-import 'package:city_connect/app/modules/home/screens/restaurantes_screen.dart';
-import 'package:city_connect/app/modules/home/screens/pontos_turisticos_screen.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:city_connect/app/data/http/http_cliente.dart';
+import 'package:city_connect/app/data/repositories/home_repository.dart';
+import 'package:city_connect/app/data/token/token.dart';
+import 'package:city_connect/app/modules/home/screens/home_store.dart';
+import 'package:city_connect/app/modules/home/screens/hoteis_screen.dart';
+import 'package:city_connect/app/modules/home/screens/restaurantes_screen.dart';
+
+import 'pontos_turisticos_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -11,13 +17,20 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final store = HomeStore(
+    repository: EstabelcimentosRepository(
+      cliente: HttpCliente(token: Modular.get<Token>()),
+    ),
+  );
+
+  final Token token = Modular.get<Token>();
   int _selectedIndex = 0;
 
-  final List<Widget> _screens = [
-    HoteisScreen(),
-    RestaurantesScreen(),
-    PontosTuristicosScreen(),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    store.listEstabecimentos();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: Colors.blue,
               ),
               child: Text(
-                'Seja bem-vindo, João',
+                'Seja bem-vindo ',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,
@@ -52,9 +65,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _screens,
+      body: Observer(
+        builder: (_) => _buildBody(),
       ),
       bottomNavigationBar: CurvedNavigationBar(
         items: const [
@@ -70,5 +82,33 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
     );
+  }
+
+  Widget _buildBody() {
+    if (store.loading) {
+      return Center(child: CircularProgressIndicator());
+    } else if (store.sucess) {
+      switch (_selectedIndex) {
+        case 0:
+          return HoteisScreen(
+              estabelecimentos: store.filterEstabelecimentosByType('HOTEL'));
+        case 1:
+          return RestaurantesScreen(
+              estabelecimentos:
+                  store.filterEstabelecimentosByType('RESTAURANTE'));
+        case 2:
+          return PontosTuristicosScreen(
+              estabelecimentos:
+                  store.filterEstabelecimentosByType('PONTOSTURISTICOS'));
+        default:
+          return Container();
+      }
+    } else if (store.error) {
+      return Center(
+        child: Text('Não foi possível exibir os estabelecimentos'),
+      );
+    } else {
+      return Container(); // Estado inicial
+    }
   }
 }

@@ -1,10 +1,13 @@
 import 'package:city_connect/app/data/http/http_cliente.dart';
+import 'package:city_connect/app/data/models/auth_model/login_model.dart';
 import 'package:city_connect/app/data/repositories/auth_repository.dart';
+import 'package:city_connect/app/data/repositories/home_repository.dart';
+import 'package:city_connect/app/data/token/token.dart';
 import 'package:city_connect/app/modules/auth/login/login_store.dart';
+import 'package:city_connect/app/modules/home/screens/home_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../../../common_widgets/custom_load_button.dart';
 import '../../../../common_widgets/login/my_container_login_custom.dart';
@@ -19,24 +22,19 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _email.dispose();
+    _senha.dispose();
+  }
+
   final store = LoginStore(repository: AuthRepository(cliente: HttpCliente()));
 
   final _formKey = GlobalKey<FormState>();
   final _email = TextEditingController();
   final _senha = TextEditingController();
-
-  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
-
-  Future<void> _signInWithGoogle() async {
-    try {
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser != null) {
-        print('Usuário logado com sucesso: ${googleUser.email}');
-      }
-    } catch (error) {
-      print('Erro ao fazer login com o Google: $error');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 10),
                         CustomTextFormFieldLogin(
+                          obscureText: true,
                           controller: _senha,
                           hint: 'Senha',
                           validatorMessage: 'Senha obrigatória',
@@ -117,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       textColor: AppColors.cyan,
                       onClick: () {
                         if (_formKey.currentState!.validate()) {
-                          _handleLogin();
+                          _handleLogin(email: _email.text, senha: _senha.text);
                           FocusScope.of(context).unfocus();
                         }
                       },
@@ -132,20 +131,37 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void _handleLogin() async {
-    Modular.to.pushReplacementNamed('/home/');
+  void _handleLogin({required email, required senha}) async {
+    LoginModel loginModel = LoginModel(
+      email: _email.text,
+      password: _senha.text,
+    );
+    print(_email.text);
+
+    try {
+      await store.login(login: loginModel);
+
+      if (store.loginSucess) {
+        _email.clear();
+        _senha.clear();
+        Modular.to.pushReplacementNamed('/home/');
+      } else if (store.loginError) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao fazer login'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      // Trate qualquer exceção que possa ocorrer durante o login
+      print('Erro durante o login: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erro ao fazer login'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
-  //   print(_email.text);
-  //   await store.loginWithEmailAndPassword(_email.text, _senha.text);
-  //   if (store.loginError) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(
-  //         content: Text('Erro ao fazer login'),
-  //         backgroundColor: Colors.red,
-  //       ),
-  //     );
-  //   } else if (store.loginSucess == true) {
-  //     Modular.to.pushReplacementNamed('/home/');
-  //   }
-  // }
 }

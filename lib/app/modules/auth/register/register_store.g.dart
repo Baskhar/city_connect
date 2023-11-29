@@ -61,8 +61,8 @@ mixin _$RegisterStore on _RegisterStore, Store {
       AsyncAction('_RegisterStore.register', context: context);
 
   @override
-  Future register(AuthModel user) {
-    return _$registerAsyncAction.run(() => super.register(user));
+  Future register({required AuthModel user}) {
+    return _$registerAsyncAction.run(() => super.register(user: user));
   }
 
   @override

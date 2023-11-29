@@ -21,7 +21,7 @@ abstract class _RegisterStore with Store {
   });
 
   @action
-  register(AuthModel user) async {
+  register({required AuthModel user}) async {
     loading = true;
 
     try {
@@ -33,6 +33,6 @@ abstract class _RegisterStore with Store {
     }
     loading = false;
     registerError = false;
-    registerSuccess = false;
+    //registerSuccess = false;
   }
 }

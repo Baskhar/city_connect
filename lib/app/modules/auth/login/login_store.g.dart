@@ -57,6 +57,14 @@ mixin _$LoginStore on _LoginStore, Store {
     });
   }
 
+  late final _$loginAsyncAction =
+      AsyncAction('_LoginStore.login', context: context);
+
+  @override
+  Future login({required LoginModel login}) {
+    return _$loginAsyncAction.run(() => super.login(login: login));
+  }
+
   @override
   String toString() {
     return '''
