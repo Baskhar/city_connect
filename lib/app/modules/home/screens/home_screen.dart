@@ -99,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
         case 2:
           return PontosTuristicosScreen(
               estabelecimentos:
-                  store.filterEstabelecimentosByType('PONTOSTURISTICOS'));
+                  store.filterEstabelecimentosByType('PONTO_TURISTICO'));
         default:
           return Container();
       }

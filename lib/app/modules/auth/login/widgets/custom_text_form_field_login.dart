@@ -7,7 +7,9 @@ class CustomTextFormFieldLogin extends StatefulWidget {
   final String hint;
   final String validatorMessage;
   final TextInputType? keyboardType;
-  bool obscureText; // Adicionei a propriedade aqui
+  final IconData? suffixIcon;
+  bool? obscureText; // Adicionei a propriedade aqui
+  final VoidCallback? onSuffixIconPressed;
 
   // Atualizei o construtor para aceitar a nova propriedade
   CustomTextFormFieldLogin({
@@ -15,8 +17,10 @@ class CustomTextFormFieldLogin extends StatefulWidget {
     required this.controller,
     required this.hint,
     required this.validatorMessage,
-    this.obscureText = false, // Definido um valor padrão
+    this.suffixIcon,
+    this.obscureText, // Definido um valor padrão
     this.keyboardType,
+    this.onSuffixIconPressed,
   }) : super(key: key);
 
   @override
@@ -45,7 +49,8 @@ class _CustomTextFormFieldLoginState extends State<CustomTextFormFieldLogin> {
               child: TextFormField(
                 controller: widget.controller,
                 keyboardType: widget.keyboardType,
-                obscureText: notShowText, // Use a propriedade diretamente aqui
+                obscureText: widget.obscureText ??
+                    false, // Use a propriedade diretamente aqui
                 decoration: InputDecoration(
                   border: InputBorder.none,
                   focusedBorder: InputBorder.none,
@@ -54,6 +59,15 @@ class _CustomTextFormFieldLoginState extends State<CustomTextFormFieldLogin> {
                     color: AppColors.black,
                     fontWeight: FontWeight.bold,
                   ),
+                  suffixIcon: widget.suffixIcon != null
+                      ? IconButton(
+                          onPressed: widget.onSuffixIconPressed,
+                          icon: Icon(
+                            widget.suffixIcon!,
+                            color: Colors.black,
+                          ),
+                        )
+                      : null,
                 ),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
@@ -63,19 +77,6 @@ class _CustomTextFormFieldLoginState extends State<CustomTextFormFieldLogin> {
                 },
               ),
             ),
-            if (widget
-                .obscureText) // Mostra o ícone apenas se obscureText for verdadeiro
-              IconButton(
-                onPressed: () {
-                  setState(() {
-                    notShowText = !notShowText;
-                  });
-                },
-                icon: Icon(
-                  widget.obscureText ? Icons.visibility : Icons.visibility_off,
-                  color: AppColors.black,
-                ),
-              )
           ],
         ),
       ),

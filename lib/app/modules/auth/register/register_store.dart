@@ -26,8 +26,8 @@ abstract class _RegisterStore with Store {
 
     try {
       final result = await repository.register(user: user);
-      registerSuccess = true;
       loading = false;
+      registerSuccess = true;
     } catch (e) {
       registerError = true;
     }

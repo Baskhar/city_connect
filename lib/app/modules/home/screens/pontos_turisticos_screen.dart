@@ -8,7 +8,8 @@ import '../../../constants/app_images.dart';
 class PontosTuristicosScreen extends StatelessWidget {
   final List<EstabelecimentoModel> estabelecimentos;
 
-  const PontosTuristicosScreen({super.key, required this.estabelecimentos});
+  const PontosTuristicosScreen({Key? key, required this.estabelecimentos})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -16,25 +17,25 @@ class PontosTuristicosScreen extends StatelessWidget {
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-              image: AssetImage(AppImages.backgroundPontosTuristicos),
-              fit: BoxFit.cover),
+            image: AssetImage(AppImages.backgroundPontosTuristicos),
+            fit: BoxFit.cover,
+          ),
         ),
-        child: ListView.builder(
-          itemCount: (estabelecimentos.length / 2).ceil(),
+        child: GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 16.0,
+            mainAxisSpacing: 16.0,
+          ),
+          itemCount: estabelecimentos.length,
           itemBuilder: (context, index) {
-            final startIndex = index * 2;
-            final endIndex = startIndex + 2;
-            final currentEstabelecimentos = estabelecimentos.sublist(
-                startIndex, endIndex.clamp(0, estabelecimentos.length));
-
+            final estabelecimento = estabelecimentos[index];
             return Padding(
               padding:
-                  const EdgeInsets.symmetric(vertical: 16.0, horizontal: 25.0),
+                  const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
               child: ListEstabelecimentosCustom(
-                estabelecimentos: currentEstabelecimentos,
+                estabelecimento: estabelecimento,
                 onTap: (estabelecimento) {
-                  // Implemente a navegação ou ação desejada aqui
-                  // Passar o ID para a próxima tela
                   Navigator.pushNamed(
                     context,
                     '/home/estabelecimento',

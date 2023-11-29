@@ -29,7 +29,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _senhaController = TextEditingController();
   final _confirmarSenhaController = TextEditingController();
-
+  bool _showPassword = false;
+  bool _showConfirmePassword = false;
   @override
   Widget build(BuildContext context) {
     final largura = MediaQuery.of(context).size.width;
@@ -75,18 +76,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         const SizedBox(height: 10),
                         CustomTextFormFieldLogin(
-                          controller: _senhaController,
-                          hint: 'Senha',
-                          validatorMessage: 'Senha obrigatória',
-                          obscureText: true,
-                        ),
+                            controller: _senhaController,
+                            hint: 'Senha',
+                            validatorMessage: 'Senha obrigatória',
+                            obscureText: !_showPassword,
+                            suffixIcon: _showPassword
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            onSuffixIconPressed: () {
+                              setState(() {
+                                _showPassword = !_showPassword;
+                              });
+                            }),
                         const SizedBox(height: 10),
                         CustomTextFormFieldLogin(
-                          controller: _confirmarSenhaController,
-                          hint: 'Repita a senha',
-                          validatorMessage: 'Senhas não coincidem',
-                          obscureText: true,
-                        ),
+                            controller: _confirmarSenhaController,
+                            hint: 'Repita a senha',
+                            validatorMessage: 'Senhas não coincidem',
+                            obscureText: !_showConfirmePassword,
+                            suffixIcon: _showConfirmePassword
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            onSuffixIconPressed: () {
+                              setState(() {
+                                _showConfirmePassword = !_showConfirmePassword;
+                              });
+                            }),
                       ],
                     ),
                   ),
@@ -108,6 +123,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             nome: _nomeController.text,
                             email: _emailController.text,
                             password: _senhaController.text,
+                            confirmarSenha: _confirmarSenhaController.text,
                           );
                           FocusScope.of(context).unfocus();
                         }
@@ -128,8 +144,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     required String nome,
     required String email,
     required String password,
+    required String confirmarSenha,
   }) async {
-    if (_senhaController.text != _confirmarSenhaController.text) {
+    if (password != confirmarSenha) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('As senhas não coincidem'),
@@ -140,21 +157,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
 
     final register = AuthModel(nome: nome, email: email, password: password);
-    await store.register(user: register);
 
-    if (store.registerError) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erro ao fazer login'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    } else if (store.registerSuccess) {
-      _emailController.clear();
-      _senhaController.clear();
-      _confirmarSenhaController.clear();
-      _nomeController.clear();
-      Modular.to.pop('/login/');
-    }
+    try {
+      await store.register(user: register);
+
+      // Aguarde o processo de registro ser concluído
+      if (store.registerSuccess == true) {
+        _nomeController.clear();
+        _emailController.clear();
+        _senhaController.clear();
+        _confirmarSenhaController.clear();
+        //_clearTextControllers();
+        Modular.to.pop('/login/');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao fazer login'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {}
   }
 }

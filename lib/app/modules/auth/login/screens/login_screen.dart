@@ -31,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   final store = LoginStore(repository: AuthRepository(cliente: HttpCliente()));
-
+  bool _showPassword = false;
   final _formKey = GlobalKey<FormState>();
   final _email = TextEditingController();
   final _senha = TextEditingController();
@@ -68,11 +68,18 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 10),
                         CustomTextFormFieldLogin(
-                          obscureText: true,
-                          controller: _senha,
-                          hint: 'Senha',
-                          validatorMessage: 'Senha obrigatória',
-                        ),
+                            obscureText: !_showPassword,
+                            controller: _senha,
+                            hint: 'Senha',
+                            validatorMessage: 'Senha obrigatória',
+                            suffixIcon: _showPassword
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            onSuffixIconPressed: () {
+                              setState(() {
+                                _showPassword = !_showPassword;
+                              });
+                            }),
                         SizedBox(
                           height: 15,
                         ),
@@ -145,13 +152,14 @@ class _LoginScreenState extends State<LoginScreen> {
         _email.clear();
         _senha.clear();
         Modular.to.pushReplacementNamed('/home/');
-      } else if (store.loginError) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erro ao fazer login'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        // } else if (store.loginError) {
+        //   ScaffoldMessenger.of(context).showSnackBar(
+        //     SnackBar(
+        //       content: Text('Erro ao fazer login'),
+        //       backgroundColor: Colors.red,
+        //     ),
+        //   );
+        // }
       }
     } catch (e) {
       // Trate qualquer exceção que possa ocorrer durante o login

@@ -21,19 +21,22 @@ class HoteisScreen extends StatelessWidget {
             fit: BoxFit.cover,
           ),
         ),
-        child: ListView.builder(
-          itemCount: (estabelecimentos.length / 2).ceil(),
+        child: GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2, // Defina o número de colunas desejado
+            crossAxisSpacing:
+                16.0, // Adicione espaçamento horizontal entre os itens
+            mainAxisSpacing:
+                16.0, // Adicione espaçamento vertical entre os itens
+          ),
+          itemCount: estabelecimentos.length,
           itemBuilder: (context, index) {
-            final startIndex = index * 2;
-            final endIndex = startIndex + 2;
-            final currentEstabelecimentos = estabelecimentos.sublist(
-                startIndex, endIndex.clamp(0, estabelecimentos.length));
-
+            final estabelecimento = estabelecimentos[index];
             return Padding(
               padding:
-                  const EdgeInsets.symmetric(vertical: 16.0, horizontal: 25.0),
+                  const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
               child: ListEstabelecimentosCustom(
-                estabelecimentos: currentEstabelecimentos,
+                estabelecimento: estabelecimento,
                 onTap: (estabelecimento) {
                   // Implemente a navegação ou ação desejada aqui
                   // Passar o ID para a próxima tela

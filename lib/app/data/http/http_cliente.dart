@@ -21,9 +21,9 @@ class HttpCliente implements IhttpCliente {
   Future<Map<String, String>> getHeaders() async {
     final tokenValue = await token?.getToken() ?? '';
     return tokenValue.isEmpty
-        ? {'Content-Type': 'application/json'}
+        ? {'Content-Type': 'application/json;charset=utf-8'}
         : {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json;charset=utf-8',
             'Authorization': 'Bearer $tokenValue',
           };
   }

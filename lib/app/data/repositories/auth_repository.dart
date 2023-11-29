@@ -62,7 +62,7 @@ class AuthRepository implements ILoginRepository, IRegisterRepository {
       },
     );
     print(response.statusCode);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 201) {
       print('teste2');
       print('Cadastro Realizado com sucesso');
       // final Map<String, dynamic> data = jsonDecode(response.body);
