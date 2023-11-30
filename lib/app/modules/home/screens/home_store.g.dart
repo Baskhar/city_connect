@@ -129,6 +129,20 @@ mixin _$HomeStore on _HomeStore, Store {
     return _$loadImagesAsyncAction.run(() => super.loadImages(id));
   }
 
+  late final _$enviarComentarioAsyncAction =
+      AsyncAction('_HomeStore.enviarComentario', context: context);
+
+  @override
+  Future enviarComentario(
+      {required int usuarioId,
+      required int estabelecimentoId,
+      required String comentario}) {
+    return _$enviarComentarioAsyncAction.run(() => super.enviarComentario(
+        usuarioId: usuarioId,
+        estabelecimentoId: estabelecimentoId,
+        comentario: comentario));
+  }
+
   late final _$_HomeStoreActionController =
       ActionController(name: '_HomeStore', context: context);
 

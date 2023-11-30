@@ -107,4 +107,31 @@ abstract class _HomeStore with Store {
     loading = false;
     error = false;
   }
+
+  @action
+  enviarComentario({
+    required int usuarioId,
+    required int estabelecimentoId,
+    required String comentario,
+  }) async {
+    loading = true;
+
+    try {
+      final result = await repository.enviarComentario(
+        usuarioId: usuarioId,
+        estabelecimentoId: estabelecimentoId,
+        comentario: comentario,
+      );
+      // Atualiza o currentEstabelecimento com os dados mais recentes
+      currentEstabelecimento = result;
+      loading = false;
+      sucess = true;
+    } catch (e) {
+      print('Erro durante o envio de comentário: $e');
+      loading = false;
+      error = true;
+    }
+    loading = false;
+    error = false;
+  }
 }

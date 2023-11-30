@@ -14,4 +14,5 @@ class AppServices {
   static const String LISTESTABELECIMENTO = "/api/estabelecimentos/";
   //static const String FOTOSESTABELECIMENTOS = "/api/estabelecimentos/";
   //static const String REGISTER = "/api/usuarios";
+  static const String AVALIACOES = "/api/avaliacoes";
 }

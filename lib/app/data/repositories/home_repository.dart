@@ -9,6 +9,11 @@ abstract class IEstabelecimentosRepository {
   Future<List<EstabelecimentoModel>> listEstabelecimentos();
   Future<EstabelecimentoModel> estabelecimento({required int id});
   Future<List<ImagesModel>> listImages({required int id});
+  Future<EstabelecimentoModel> enviarComentario({
+    required int usuarioId,
+    required int estabelecimentoId,
+    required String comentario,
+  });
 }
 
 class EstabelcimentosRepository implements IEstabelecimentosRepository {
@@ -90,6 +95,36 @@ class EstabelcimentosRepository implements IEstabelecimentosRepository {
       print(response.statusCode);
       print(response.body);
       throw Exception('Não foi possível obter as fotos do estabelecimento');
+    }
+  }
+
+  @override
+  Future<EstabelecimentoModel> enviarComentario(
+      {required int usuarioId,
+      required int estabelecimentoId,
+      required String comentario}) async {
+    final response = await cliente
+        .post(url: AppServices.baseUrl + AppServices.AVALIACOES, body: {
+      'usuarioId': usuarioId,
+      'estabelecimentoId': estabelecimentoId,
+      'comentario': comentario,
+    });
+
+    if (response.statusCode == 201) {
+      print(response.body);
+      Map<String, dynamic> responseData = jsonDecode(
+        Utf8Decoder().convert(response.bodyBytes),
+      );
+
+      // Crie um único EstabelecimentoModel
+      EstabelecimentoModel estabelecimento =
+          EstabelecimentoModel.fromMap(responseData);
+
+      return estabelecimento;
+    } else {
+      print(response.statusCode);
+      print(response.body);
+      throw Exception('Não foi possível obter enviar comentário');
     }
   }
 }

@@ -4,6 +4,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:city_connect/app/common_widgets/seta_back.dart';
 import 'package:city_connect/app/constants/app_colors.dart';
 import 'package:city_connect/app/data/http/http_cliente.dart';
+import 'package:city_connect/app/data/models/idUSer/id_user.dart';
 import 'package:city_connect/app/data/repositories/home_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -54,7 +55,7 @@ class _EstabelecimentoScreenState extends State<EstabelecimentoScreen> {
 
     store.loadImages(estabelecimentoId);
     return Scaffold(
-      body: _buildBody(),
+      body: _buildBody(estabelecimentoID: estabelecimentoId),
     );
   }
 
@@ -97,15 +98,15 @@ class _EstabelecimentoScreenState extends State<EstabelecimentoScreen> {
     }
   }
 
-  Widget _buildBody() {
+  Widget _buildBody({required int estabelecimentoID}) {
     return Observer(
       builder: (_) {
         if (store.loading) {
-          return _buildLoading();
+          return _buildSuccess(estabelecimentoId: estabelecimentoID);
         } else if (store.error) {
           return _buildError();
         } else if (store.sucess) {
-          return _buildSuccess();
+          return _buildSuccess(estabelecimentoId: estabelecimentoID);
         } else {
           return Container(); // Estado inicial
         }
@@ -125,7 +126,7 @@ class _EstabelecimentoScreenState extends State<EstabelecimentoScreen> {
     );
   }
 
-  Widget _buildSuccess() {
+  Widget _buildSuccess({required int estabelecimentoId}) {
     return SingleChildScrollView(
       child: Container(
         decoration: BoxDecoration(
@@ -277,33 +278,53 @@ class _EstabelecimentoScreenState extends State<EstabelecimentoScreen> {
                                   color: AppColors.black,
                                 ),
                               ),
-                              child: ListView.separated(
-                                itemCount: comments.length,
-                                separatorBuilder: (context, index) => Divider(
-                                  thickness: 2,
-                                  color: AppColors.black,
-                                ),
-                                itemBuilder: (context, index) {
-                                  return Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 8.0, top: 8.0),
-                                    child: Text(
-                                      comments[index],
-                                      style: TextStyle(
-                                        fontFamily: 'Borel',
-                                        fontSize: 16,
+                              child: store.currentEstabelecimento?.avaliacoes !=
+                                          null &&
+                                      store.currentEstabelecimento!.avaliacoes
+                                          .isNotEmpty
+                                  ? ListView.separated(
+                                      itemCount: store.currentEstabelecimento!
+                                          .avaliacoes.length,
+                                      separatorBuilder: (context, index) =>
+                                          Divider(
+                                        thickness: 2,
+                                        color: AppColors.black,
+                                      ),
+                                      itemBuilder: (context, index) {
+                                        return Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 8.0, top: 8.0),
+                                          child: Text(
+                                            '${store.currentEstabelecimento?.avaliacoes[index].nomeUsuario}: ${store.currentEstabelecimento?.avaliacoes![index].comentario}',
+                                            style: TextStyle(
+                                              fontFamily: 'Borel',
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    )
+                                  : Center(
+                                      child: Text(
+                                        'Nenhum comentário disponível.',
+                                        style: TextStyle(
+                                          fontFamily: 'Borel',
+                                          fontSize: 16,
+                                        ),
                                       ),
                                     ),
-                                  );
-                                },
-                              ),
                             ),
                             SizedBox(height: 10),
                             CommentInput(
-                              onCommentAdded: (comment) {
-                                // setState(() {
-                                //   comments.add(comment);
-                                // });
+                              onCommentAdded: (comment) async {
+                                final userId =
+                                    await Modular.get<UserId>().getUserId();
+
+                                await store.enviarComentario(
+                                  usuarioId: userId!,
+                                  estabelecimentoId: estabelecimentoId,
+                                  comentario: comment,
+                                );
                               },
                             ),
                           ],

@@ -10,11 +10,14 @@ class CommentInput extends StatefulWidget {
   _CommentInputState createState() => _CommentInputState();
 }
 
-class _CommentInputState extends State<CommentInput> {
+class _CommentInputState extends State<CommentInput>
+    with AutomaticKeepAliveClientMixin {
   final TextEditingController _textEditingController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // Indica que este widget deve ser mantido vivo
+
     return Row(
       children: [
         Expanded(
@@ -39,6 +42,9 @@ class _CommentInputState extends State<CommentInput> {
       ],
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void dispose() {

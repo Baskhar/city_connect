@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import '../avaliacao/avaliacao_model.dart';
 import '../endereco/endereco_model.dart';
 
 class EstabelecimentoModel {
@@ -9,6 +10,10 @@ class EstabelecimentoModel {
   final String descricao;
   final List<int> fotoPerfil; // Agora é uma lista de bytes
   final EnderecoModel endereco;
+  final double mediaNotas;
+  // final List<String> fotoPerfilList;
+  //final List<List<String>> fotosAmbiente;
+  final List<AvaliacaoModel> avaliacoes;
 
   EstabelecimentoModel({
     required this.id,
@@ -17,19 +22,11 @@ class EstabelecimentoModel {
     required this.descricao,
     required this.fotoPerfil,
     required this.endereco,
+    required this.mediaNotas,
+    //required this.fotoPerfilList,
+    // required this.fotosAmbiente,
+    required this.avaliacoes,
   });
-
-  // Map<String, dynamic> toMap() {
-  //   return <String, dynamic>{
-  //     'id': id,
-  //     'nome': nome,
-  //     'tipo': tipo,
-  //     'descricao': descricao,
-  //     'fotoPerfil':
-  //         base64Encode(fotoPerfil), // Codifica a lista de bytes para base64
-  //     // 'endereco': endereco.toMap(),
-  //   };
-  // }
 
   factory EstabelecimentoModel.fromMap(Map<String, dynamic> map) {
     return EstabelecimentoModel(
@@ -37,14 +34,30 @@ class EstabelecimentoModel {
       nome: map['nome'] as String,
       tipo: map['tipo'] as String,
       descricao: map['descricao'] as String,
-      fotoPerfil: base64Decode(map['fotoPerfil']
-          as String), // Decodifica a base64 para lista de bytes
+      fotoPerfil: base64Decode(map['fotoPerfil'] as String),
       endereco: EnderecoModel.fromMap(map['endereco'] as Map<String, dynamic>),
+      mediaNotas: map['mediaNotas'] as double,
+      //  fotoPerfilList: List<String>.from(map['fotoPerfil']),
+      //   fotosAmbiente: List<List<String>>.from(map['fotosAmbiente']),
+      avaliacoes: (map['avaliacoes'] as List<dynamic>?)
+              ?.map((e) => AvaliacaoModel.fromMap(e as Map<String, dynamic>))
+              .toList() ??
+          [],
     );
   }
 
-  // String toJson() => json.encode(toMap());
-
-  // factory EstabelecimentoModel.fromJson(String source) =>
-  //     EstabelecimentoModel.fromMap(json.decode(source) as Map<String, dynamic>);
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'nome': nome,
+      'tipo': tipo,
+      'descricao': descricao,
+      'fotoPerfil': base64Encode(fotoPerfil),
+      'endereco': endereco.toMap(),
+      'mediaNotas': mediaNotas,
+      // 'fotoPerfilList': fotoPerfilList,
+      // 'fotosAmbiente': fotosAmbiente,
+      'avaliacoes': avaliacoes.map((e) => e.toMap()).toList(),
+    };
+  }
 }
