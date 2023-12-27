@@ -136,11 +136,13 @@ mixin _$HomeStore on _HomeStore, Store {
   Future enviarComentario(
       {required int usuarioId,
       required int estabelecimentoId,
-      required String comentario}) {
+      required String comentario,
+      required int nota}) {
     return _$enviarComentarioAsyncAction.run(() => super.enviarComentario(
         usuarioId: usuarioId,
         estabelecimentoId: estabelecimentoId,
-        comentario: comentario));
+        comentario: comentario,
+        nota: nota));
   }
 
   late final _$_HomeStoreActionController =

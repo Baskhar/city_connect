@@ -13,6 +13,7 @@ abstract class IEstabelecimentosRepository {
     required int usuarioId,
     required int estabelecimentoId,
     required String comentario,
+    required int nota,
   });
 }
 
@@ -102,7 +103,8 @@ class EstabelcimentosRepository implements IEstabelecimentosRepository {
   Future<EstabelecimentoModel> enviarComentario(
       {required int usuarioId,
       required int estabelecimentoId,
-      required String comentario}) async {
+      required String comentario,
+      required int nota}) async {
     final response = await cliente
         .post(url: AppServices.baseUrl + AppServices.AVALIACOES, body: {
       'usuarioId': usuarioId,

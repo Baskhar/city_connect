@@ -113,6 +113,7 @@ abstract class _HomeStore with Store {
     required int usuarioId,
     required int estabelecimentoId,
     required String comentario,
+    required int nota,
   }) async {
     loading = true;
 
@@ -121,6 +122,7 @@ abstract class _HomeStore with Store {
         usuarioId: usuarioId,
         estabelecimentoId: estabelecimentoId,
         comentario: comentario,
+        nota: nota,
       );
       // Atualiza o currentEstabelecimento com os dados mais recentes
       currentEstabelecimento = result;

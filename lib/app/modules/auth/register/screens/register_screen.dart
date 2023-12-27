@@ -167,6 +167,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
         _emailController.clear();
         _senhaController.clear();
         _confirmarSenhaController.clear();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Login Realizado Com Sucesso'),
+            backgroundColor: Colors.green,
+          ),
+        );
         //_clearTextControllers();
         Modular.to.pop('/login/');
       } else {
